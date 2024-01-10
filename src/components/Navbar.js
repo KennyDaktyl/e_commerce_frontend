@@ -10,7 +10,7 @@ const Navbar = ({ logout, isAuthenticated }) => {
                 <Link className='nav-link' to='/login'>Zaloguj</Link>
             </li>
             <li className='nav-item'>
-                <Link className='nav-link' to='/signin'>Zarejestruj</Link>
+                <Link className='nav-link' to='/signup'>Zarejestruj</Link>
             </li>
         </Fragment>
     );
@@ -25,7 +25,7 @@ const Navbar = ({ logout, isAuthenticated }) => {
 
     return (
         <div className='container-fluid'>
-            <nav className='navbar navbar-expand-lg bg-body-tertiary'>
+            <nav className='navbar navbar-expand-lg navbar-light bg-body-tertiary'>
                 <div className='container'>
                     <Link className='navbar-brand' to='/'>Navbar</Link>
                     <button 

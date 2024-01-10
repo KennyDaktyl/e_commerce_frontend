@@ -1,10 +1,18 @@
 import {
   LOGIN_SUCCESS,
   LOGIN_FAIL,
+  SIGNUP_SUCCESS,
+  SIGNUP_FAIL,
+  ACTIVATION_SUCCESS,
+  ACTIVATION_FAIL,
   USER_LOADED_SUCCESS,
   USER_LOADED_FAIL,
   AUTHENTICATED_FAIL,
   AUTHENTICATED_SUCCESS,
+  PASSWORD_RESET_SUCCESS,
+  PASSWORD_RESET_FAIL,
+  PASSWORD_RESET_CONFIRM_SUCCESS,
+  PASSWORD_RESET_CONFIRM_FAIL,
   LOGOUT
 } from '../actions/types';
 
@@ -26,6 +34,11 @@ const authReducer = function(state = initialState, action) {
         isAuthenticated: true,
         access: payload.access,
         refresh: payload.refresh,
+      };
+    case SIGNUP_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: true,
       };
     case USER_LOADED_SUCCESS:
       return {
@@ -50,6 +63,7 @@ const authReducer = function(state = initialState, action) {
         isAuthenticated: false,
       };
     case LOGIN_FAIL:
+    case SIGNUP_FAIL:
     case LOGOUT:
       localStorage.removeItem('access');
       localStorage.removeItem('refresh');
@@ -60,6 +74,12 @@ const authReducer = function(state = initialState, action) {
         refresh: null,
         user: null,
       };
+    case ACTIVATION_SUCCESS:
+    case ACTIVATION_FAIL:
+    case PASSWORD_RESET_SUCCESS:
+    case PASSWORD_RESET_FAIL:
+    case PASSWORD_RESET_CONFIRM_SUCCESS:
+    case PASSWORD_RESET_CONFIRM_FAIL:
     default:
       return state;
   }

@@ -1,22 +1,42 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
-
 import { login } from '../actions/auth';
+import { validateEmail } from '../validators';
 
 const Login = ({ login, isAuthenticated }) => {
     const [formData, setFormData] = useState({
         'email': '',
         'password': ''
     });
-
+    const [errorMessages, setErrorMessages] = useState({
+        'email': '',
+        'password': '',
+        'account': ''
+    });
     const { email, password } = formData;
 
-    const onChange = e => setFormData(prevState => ({ ...prevState, [e.target.name]: e.target.value }));
+    const onChange = e => {
+        setFormData(prevState => ({ ...prevState, [e.target.name]: e.target.value }));
+        setErrorMessages(prevState => ({ ...prevState, [e.target.name]: '' }));
+    }
 
-    const onSubmit = e => {
+    const onSubmit = async e => {
         e.preventDefault();
-        login(email, password)
+
+        if (!validateEmail(email)) {
+            setErrorMessages(prevState => ({ ...prevState, 'email': 'Niepoprawny format adresu email' }));
+            return;
+        }
+        
+        const res = await login(email, password);
+        if (res && res.data) {
+            if (res.data.detail) {
+                setErrorMessages(prevState => ({ ...prevState, 'account': 'Niepoprawne dane logowania' }));
+            } else {
+                setErrorMessages(res.data);
+            }
+        } 
     };
 
     if (isAuthenticated) {
@@ -25,8 +45,8 @@ const Login = ({ login, isAuthenticated }) => {
 
     return (
         <div className='container mt-5'>
-            <h1>Rejestracja</h1>
-            <p>Podaj dane do założenia konta</p>
+            <h1>Logowanie</h1>
+            <div className='text-danger mt-3'>{errorMessages.account}</div>
             <form onSubmit={e => onSubmit(e)}>
                 <div className='form-group'>
                     <input 
@@ -38,6 +58,7 @@ const Login = ({ login, isAuthenticated }) => {
                         onChange={e => onChange(e)}
                         required
                     />
+                    <span className='text-danger'>{errorMessages.email}</span>
                 </div>
                 <div className='form-group mt-4'>
                     <input 
@@ -50,8 +71,9 @@ const Login = ({ login, isAuthenticated }) => {
                         minLength='6'
                         required
                     />
+                    <span className='text-danger'>{errorMessages.password}</span>
                 </div>
-                <button className='btn btn-primary mt-2' type='submiy'>Zaloguj</button>
+                <button className='btn btn-primary mt-2' type='submit'>Zaloguj</button>
             </form>
             <p className='mt-3'>
                 Nie masz konta? <Link to='/signup'>Rejestracja</Link>

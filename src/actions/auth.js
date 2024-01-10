@@ -1,10 +1,18 @@
 import {
     LOGIN_SUCCESS,
     LOGIN_FAIL,
+    SIGNUP_SUCCESS,
+    SIGNUP_FAIL,
+    ACTIVATION_SUCCESS,
+    ACTIVATION_FAIL,
     USER_LOADED_SUCCESS,
     USER_LOADED_FAIL,
     AUTHENTICATED_SUCCESS,
     AUTHENTICATED_FAIL,
+    PASSWORD_RESET_SUCCESS,
+    PASSWORD_RESET_FAIL,
+    PASSWORD_RESET_CONFIRM_SUCCESS,
+    PASSWORD_RESET_CONFIRM_FAIL,
     LOGOUT
 } from './types';
 import axios from 'axios';
@@ -71,10 +79,8 @@ export const login = (email, password) => async dispatch => {
     };
 
     const body = JSON.stringify({ email, password });
-    console.log(email)
     try {
         const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/jwt/create/`, body, config);
-
         dispatch({
             type: LOGIN_SUCCESS,
             payload: res.data
@@ -85,8 +91,104 @@ export const login = (email, password) => async dispatch => {
         dispatch({
             type: LOGIN_FAIL,
         });
+
+        return err.response; 
     }
 };
+
+export const signup = (email, password, re_password, first_name, last_name) => async dispatch => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const body = JSON.stringify({ email, password, re_password, first_name, last_name });
+    try {
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/`, body, config);
+
+        dispatch({
+            type: SIGNUP_SUCCESS,
+            payload: res.data
+        });
+
+    } catch (err) {
+        dispatch({
+            type: SIGNUP_FAIL,
+        });
+
+        return err.response;  
+    }
+};
+
+export const verify = (uid, token) => async dispatch => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const body = JSON.stringify({ uid, token });
+
+    try {
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/activation/`, body, config);
+
+        dispatch({
+            type: ACTIVATION_SUCCESS,
+        });
+
+    } catch (err) {
+        dispatch({
+            type: ACTIVATION_FAIL,
+        });
+    }
+}
+
+export const reset_password = (email) => async dispatch => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const body = JSON.stringify({ email });
+
+    try {
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password/`, body, config);
+
+        dispatch({
+            type: PASSWORD_RESET_SUCCESS,
+        });
+
+    } catch (err) {
+        dispatch({
+            type: PASSWORD_RESET_FAIL,
+        });
+    }
+}
+
+export const reset_password_confirm = (uid, token, new_password, re_new_password) => async dispatch => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const body = JSON.stringify({ uid, token, new_password, re_new_password });
+
+    try {
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password_confirm/`, body, config);
+
+        dispatch({
+            type: PASSWORD_RESET_CONFIRM_SUCCESS,
+        });
+
+    } catch (err) {
+        dispatch({
+            type: PASSWORD_RESET_CONFIRM_FAIL,
+        });
+    }
+}
 
 export const logout = () => dispatch => {
     dispatch({
