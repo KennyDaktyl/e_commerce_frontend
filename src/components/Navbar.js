@@ -4,8 +4,12 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout, checkAuthenticated } from '../actions/auth';
 
+
+// ... pozostała część importów
+
 const Navbar = ({ logout, isAuthenticated }) => {
     const [authReady, setAuthReady] = useState(false);
+    const [menuItems, setMenuItems] = useState([]);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -14,32 +18,47 @@ const Navbar = ({ logout, isAuthenticated }) => {
             setAuthReady(true);
         };
 
-        checkAuth()
+        checkAuth();
     }, [dispatch]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/main-menu-items/`);
+                const data = await response.json();
+                setMenuItems(data);
+            } catch (error) {
+                console.error('Error fetching menu items data:', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     const questLinks = () => (
         <Fragment>
-                <Link to='/login'>Zaloguj</Link>
+            <li className="nav-item">
+                <Link className='nav-link ms-auto' to='/login/'>Zaloguj</Link>
+            </li>
         </Fragment>
     );
 
     const authLinks = () => (
-            <Fragment>
-                <li className="nav-item">
-                    <Link className='nav-link ms-auto' href='#!' onClick={logout}>Wyloguj</Link>
-                </li>
-            </Fragment>
-    ); 
+        <Fragment>
+            <li className="nav-item">
+                <Link className='nav-link ms-auto' to='/' onClick={logout}>Wyloguj</Link>
+            </li>
+        </Fragment>
+    );
 
     return (
         <div className='container-fluid'>
             <div className='header-top-bar container d-flex justify-content-end align-items-center'>
-                    {authReady && (isAuthenticated ? authLinks() : questLinks())}
+                {authReady && (isAuthenticated ? authLinks() : questLinks())}
             </div>
             <nav className='navbar navbar-expand-lg navbar-light bg-body-tertiary'>
                 <div className='container '>
                     <Link className='navbar-brand' to='/'>Navbar</Link>
-                    <button 
+                    <button
                         className='navbar-toggler'
                         type='button'
                         data-bs-toggle='collapse'
@@ -52,26 +71,13 @@ const Navbar = ({ logout, isAuthenticated }) => {
                     </button>
                     <div className='collapse navbar-collapse row' id='navbarNav'>
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0 container ml-auto">
-                            <li key="1" className="nav-item">
-                                <Link className="nav-link" to='/naprawy-telefonow'>
-                                    Naprawy telefonów
-                                </Link>
-                            </li>
-                            <li key="2" className="nav-item">
-                                <Link className="nav-link" to='/pieczatki'>
-                                    Pieczątki
-                                </Link>
-                            </li>
-                            <li key="3" className="nav-item">
-                                <Link className="nav-link" to='/dorabianie-kluczy'>
-                                    Dorabianie kluczy
-                                </Link>
-                            </li>
-                            <li key="4" className="nav-item">
-                                <Link className="nav-link" to='/grawerowanie'>
-                                    Grawerowanie
-                                </Link>
-                            </li>
+                            {menuItems && menuItems.map((menuItem) => (
+                                <li key={menuItem.id} className="nav-item">
+                                    <Link className="nav-link" to={`/${menuItem.slug}/`}>
+                                        {menuItem.name}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>
@@ -80,8 +86,8 @@ const Navbar = ({ logout, isAuthenticated }) => {
     )
 }
 
-const mapsStateToProps = state => ({
+const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated
 })
- 
-export default  connect(mapsStateToProps, { logout })(Navbar);
+
+export default connect(mapStateToProps, { logout })(Navbar);
