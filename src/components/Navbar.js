@@ -1,32 +1,43 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';  
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { logout } from '../actions/auth';
+import { logout, checkAuthenticated } from '../actions/auth';
 
 const Navbar = ({ logout, isAuthenticated }) => {
+    const [authReady, setAuthReady] = useState(false);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            await dispatch(checkAuthenticated());
+            setAuthReady(true);
+        };
+
+        checkAuth()
+    }, [dispatch]);
+
     const questLinks = () => (
         <Fragment>
-            <li className='nav-item'>
-                <Link className='nav-link' to='/login'>Zaloguj</Link>
-            </li>
-            <li className='nav-item'>
-                <Link className='nav-link' to='/signup'>Zarejestruj</Link>
-            </li>
+                <Link to='/login'>Zaloguj</Link>
         </Fragment>
     );
 
     const authLinks = () => (
-        <Fragment>
-            <li className='nav-item'>
-                <Link className='nav-link' href='#!' onClick={logout}>Wyloguj</Link>
-            </li>
-        </Fragment>
-    );
+            <Fragment>
+                <li className="nav-item">
+                    <Link className='nav-link ms-auto' href='#!' onClick={logout}>Wyloguj</Link>
+                </li>
+            </Fragment>
+    ); 
 
     return (
         <div className='container-fluid'>
+            <div className='header-top-bar container d-flex justify-content-end align-items-center'>
+                    {authReady && (isAuthenticated ? authLinks() : questLinks())}
+            </div>
             <nav className='navbar navbar-expand-lg navbar-light bg-body-tertiary'>
-                <div className='container'>
+                <div className='container '>
                     <Link className='navbar-brand' to='/'>Navbar</Link>
                     <button 
                         className='navbar-toggler'
@@ -39,12 +50,28 @@ const Navbar = ({ logout, isAuthenticated }) => {
                     >
                         <span className='navbar-toggler-icon'></span>
                     </button>
-                    <div className='collapse navbar-collapse' id='navbarNav'>
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className='nav-item'>
-                                <Link className='nav-link active' aria-current='page' to='/'>Home</Link>
+                    <div className='collapse navbar-collapse row' id='navbarNav'>
+                        <ul className="navbar-nav me-auto mb-2 mb-lg-0 container ml-auto">
+                            <li key="1" className="nav-item">
+                                <Link className="nav-link" to='/naprawy-telefonow'>
+                                    Naprawy telefonów
+                                </Link>
                             </li>
-                            {isAuthenticated ? authLinks() : questLinks()}
+                            <li key="2" className="nav-item">
+                                <Link className="nav-link" to='/pieczatki'>
+                                    Pieczątki
+                                </Link>
+                            </li>
+                            <li key="3" className="nav-item">
+                                <Link className="nav-link" to='/dorabianie-kluczy'>
+                                    Dorabianie kluczy
+                                </Link>
+                            </li>
+                            <li key="4" className="nav-item">
+                                <Link className="nav-link" to='/grawerowanie'>
+                                    Grawerowanie
+                                </Link>
+                            </li>
                         </ul>
                     </div>
                 </div>

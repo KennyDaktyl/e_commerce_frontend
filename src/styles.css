@@ -1,0 +1,11 @@
+.header-top-bar {
+    height: 30px;
+} 
+
+.header-top-bar a{
+    color: rgba(0,0,0,.55);
+} 
+
+.header-top-bar a:hover{
+    color: rgba(0,0,0,.85);
+} 

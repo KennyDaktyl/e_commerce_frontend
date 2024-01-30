@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { login } from '../actions/auth';
 import { validateEmail } from '../validators';
+import axios from 'axios';
 
 const Login = ({ login, isAuthenticated }) => {
     const [formData, setFormData] = useState({
@@ -16,6 +17,15 @@ const Login = ({ login, isAuthenticated }) => {
     });
     const { email, password } = formData;
 
+    const continueWithGoogle = async () => {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/auth/o/google-oauth2/?redirect_uri=${process.env.REACT_APP_API_URL}`);
+            window.location.replace(res.data.authorization_url);
+        } catch (err) {
+
+        }
+    }
+
     const onChange = e => {
         setFormData(prevState => ({ ...prevState, [e.target.name]: e.target.value }));
         setErrorMessages(prevState => ({ ...prevState, [e.target.name]: '' }));
@@ -28,8 +38,8 @@ const Login = ({ login, isAuthenticated }) => {
             setErrorMessages(prevState => ({ ...prevState, 'email': 'Niepoprawny format adresu email' }));
             return;
         }
-        
         const res = await login(email, password);
+
         if (res && res.data) {
             if (res.data.detail) {
                 setErrorMessages(prevState => ({ ...prevState, 'account': 'Niepoprawne dane logowania' }));
@@ -75,6 +85,9 @@ const Login = ({ login, isAuthenticated }) => {
                 </div>
                 <button className='btn btn-primary mt-2' type='submit'>Zaloguj</button>
             </form>
+            <button className='btn btn-danger mt-3' onClick={continueWithGoogle}>
+                Zaloguj przez Google
+            </button>
             <p className='mt-3'>
                 Nie masz konta? <Link to='/signup'>Rejestracja</Link>
             </p>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import './styles.css';
 
 import Home from './containers/Home';
 import Login from './containers/Login';
@@ -11,6 +12,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 
 import Layout from './hocs/Layout';
+import Categories from './pages/Category';
 
 const App = () => {
   return (
@@ -24,6 +26,7 @@ const App = () => {
             <Route path='/reset-password' element={<ResetPassword />} />
             <Route path='/password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm />} />
             <Route path='/activate/:uid/:token' element={<Activate />} />
+            <Route path="/:slug/*" element={<Categories />} />
           </Routes>
         </Layout>
       </Router>
