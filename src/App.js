@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 
 import Layout from './hocs/Layout';
-import Categories from './pages/Category';
+import ProductsList from './pages/products/ProductsList';
 
 const App = () => {
   return (
@@ -26,7 +26,7 @@ const App = () => {
             <Route path='/reset-password' element={<ResetPassword />} />
             <Route path='/password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm />} />
             <Route path='/activate/:uid/:token' element={<Activate />} />
-            <Route path="/:slug/*" element={<Categories />} />
+            <Route path="/:slug/*" element={<ProductsList />} />
           </Routes>
         </Layout>
       </Router>
