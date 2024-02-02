@@ -7,6 +7,7 @@ const CategoryWithProducts = ({ category, parentPath, fetchProducts, categoryDat
     handleClick();
   };
 
+  console.log(category.slug)
   return (
     <li className={`col-12 m-0 p-0 mt-3 pl-2 ${activeLink === category.slug ? 'active-link' : ''}`} key={category.id}>
       <Link
@@ -14,10 +15,12 @@ const CategoryWithProducts = ({ category, parentPath, fetchProducts, categoryDat
         className={`col-12 text-left ml-0`}
         onClick={handleProductClick}
       >
-        <span className={category.slug === activeLink ? 'active-link' : ''}>{category.name}</span><span>&nbsp;({category.get_products_count})</span>
+        <span className={category.slug === activeLink ? 'active-link' : ''}>{category.name}</span>
+        <span>&nbsp;({category.get_products_count})</span>
       </Link>
     </li>
   );
 };
 
 export default CategoryWithProducts;
+

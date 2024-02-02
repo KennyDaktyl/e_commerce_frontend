@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import CategoryItem from './CategoryItem';
-import CategoryWithProducts from './CategoryWithSubcategories';
+import CategoryWithProducts from './CategoryWithProducts';
 import Product from './Product';
 
 
@@ -52,35 +52,39 @@ const ProductsList = () => {
           <h2>{categoryData.name}</h2>
           <p>{categoryData.description}</p>
           <div className='side-bar-nav col-3'>
-            <ul className='list-unstyled'>
-              {categoryData.subcategories && categoryData.subcategories.map((category) => (
-                category.parent && (
-                  (category.subcategories && category.subcategories.length > 0) ? (
-                    <CategoryItem
-                      key={category.id}
-                      category={category}
-                      parentPath={parentPath}
-                      fetchProducts={fetchProducts}
-                      categoryData={categoryData}
-                      activeLink={activeLink}
-                      setActiveLink={setActiveLink}
-                      handleClick={() => setActiveLink(category.slug)}
-                    />
-                  ) : (
-                    <CategoryWithProducts
-                      key={category.id}
-                      category={category}
-                      parentPath={parentPath}
-                      fetchProducts={fetchProducts}
-                      categoryData={categoryData}
-                      activeLink={activeLink}
-                      setActiveLink={setActiveLink}
-                      handleClick={() => setActiveLink(category.slug)}
-                    />
-                  )
-                )
-              ))}
-            </ul>
+         <ul className='list-unstyled'>
+  {categoryData.subcategories && categoryData.subcategories.map((category) => (
+    category.parent && (
+      (category.subcategories && category.subcategories.length > 0 && category.get_products_count === 0) ? (
+
+        <CategoryItem
+          key={category.id}
+          category={category}
+          parentPath={parentPath}
+          fetchProducts={fetchProducts}
+          categoryData={categoryData}
+          activeLink={activeLink}
+          setActiveLink={setActiveLink}
+          handleClick={() => setActiveLink(category.slug)}
+        />
+      ) : (
+        <>
+          <CategoryWithProducts
+            key={category.id}
+            category={category}
+            parentPath={parentPath}
+            fetchProducts={fetchProducts}
+            categoryData={categoryData}
+            activeLink={activeLink}
+            setActiveLink={setActiveLink}
+            handleClick={() => setActiveLink(category.slug)}
+          />
+        </>
+      )
+    )
+  ))}
+</ul>
+
           </div>
           <div className="container__products col-9 d-flex justify-content-center">
             {products.map(product => (
