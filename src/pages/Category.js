@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-const MenuItems = ({ category, parentPath, fetchProducts, categoryData }) => {
+const MenuItems = ({ category, parentPath, fetchProducts, categoryData, activeLink, setActiveLink }) => {
   const hasSubcategories = category.subcategories && category.subcategories.length > 0;
+
+  const handleClick = () => {
+    setActiveLink(category.slug);
+  };
 
   if (hasSubcategories) {
     return (
@@ -11,6 +15,9 @@ const MenuItems = ({ category, parentPath, fetchProducts, categoryData }) => {
         parentPath={parentPath}
         fetchProducts={fetchProducts}
         categoryData={categoryData}
+        activeLink={activeLink}
+        setActiveLink={setActiveLink}
+        handleClick={handleClick}
       />
     );
   } else {
@@ -20,12 +27,15 @@ const MenuItems = ({ category, parentPath, fetchProducts, categoryData }) => {
         parentPath={parentPath}
         fetchProducts={fetchProducts}
         categoryData={categoryData}
+        activeLink={activeLink}
+        setActiveLink={setActiveLink}
+        handleClick={handleClick}
       />
     );
   }
 };
 
-const CategoryWithSubcategories = ({ category, parentPath, fetchProducts, categoryData }) => {
+const CategoryWithSubcategories = ({ category, parentPath, fetchProducts, categoryData, activeLink, setActiveLink, handleClick }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleToggle = () => {
@@ -33,15 +43,18 @@ const CategoryWithSubcategories = ({ category, parentPath, fetchProducts, catego
   };
 
   return (
-    <li className={`active col-12 m-0 p-0 mt-3 pl-2 has-subcategories`} key={category.id}>
+    <li className={`col-12 m-0 p-0 mt-3 pl-2 has-subcategories`} key={category.id}>
       <Link
         to={`/${categoryData.slug}${parentPath}/${category.slug}/`}
         data-toggle='collapse'
         aria-expanded={isExpanded}
         className={`col-12 text-left ml-0 collapsed ${category.subcategories ? 'dropdown-toggle' : ''}`}
-        onClick={handleToggle}
+        onClick={() => {
+          handleToggle();
+          handleClick();
+        }}
       >
-        <span>{category.name}</span>
+        <span className={category.slug === activeLink ? 'active-link' : ''}>{category.name}</span>
       </Link>
       {isExpanded && category.subcategories && (
         <ul className="list-unstyled">
@@ -52,6 +65,9 @@ const CategoryWithSubcategories = ({ category, parentPath, fetchProducts, catego
               parentPath={`${parentPath}/${category.slug}`}
               fetchProducts={fetchProducts}
               categoryData={categoryData}
+              activeLink={activeLink}
+              setActiveLink={setActiveLink}
+              handleClick={handleClick}
             />
           ))}
         </ul>
@@ -60,19 +76,20 @@ const CategoryWithSubcategories = ({ category, parentPath, fetchProducts, catego
   );
 };
 
-const CategoryWithProducts = ({ category, parentPath, fetchProducts, categoryData }) => {
+const CategoryWithProducts = ({ category, parentPath, fetchProducts, categoryData, activeLink, setActiveLink, handleClick }) => {
   const handleProductClick = async () => {
     fetchProducts(category.slug);
+    handleClick();
   };
 
   return (
-    <li className={`active col-12 m-0 p-0 mt-3 pl-2`} key={category.id}>
+    <li className={`col-12 m-0 p-0 mt-3 pl-2 ${activeLink === category.slug ? 'active-link' : ''}`} key={category.id}>
       <Link
         to={`/${categoryData.slug}${parentPath}/${category.slug}/`}
         className={`col-12 text-left ml-0`}
         onClick={handleProductClick}
       >
-        <span>{category.name}</span><span>&nbsp;({category.get_products_count})</span>
+        <span className={category.slug === activeLink ? 'active-link' : ''}>{category.name}</span><span>&nbsp;({category.get_products_count})</span>
       </Link>
     </li>
   );
@@ -82,6 +99,7 @@ const Categories = () => {
   const [categoryData, setCategoryData] = useState(null);
   const [products, setProducts] = useState([]);
   const { slug } = useParams();
+  const [activeLink, setActiveLink] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,7 +120,6 @@ const Categories = () => {
   }
 
   const parentPath = categoryData.parent ? `/${categoryData.parent.slug}` : '';
-
 
   const fetchProducts = async (categorySlug) => {
     try {
@@ -129,12 +146,15 @@ const Categories = () => {
               {categoryData.subcategories && categoryData.subcategories.map((category) => (
                 category.parent && (
                   (category.subcategories && category.subcategories.length > 0) ? (
-                    <CategoryWithSubcategories
+                    <MenuItems
                       key={category.id}
                       category={category}
                       parentPath={parentPath}
                       fetchProducts={fetchProducts}
                       categoryData={categoryData}
+                      activeLink={activeLink}
+                      setActiveLink={setActiveLink}
+                      handleClick={() => setActiveLink(category.slug)}
                     />
                   ) : (
                     <CategoryWithProducts
@@ -143,6 +163,9 @@ const Categories = () => {
                       parentPath={parentPath}
                       fetchProducts={fetchProducts}
                       categoryData={categoryData}
+                      activeLink={activeLink}
+                      setActiveLink={setActiveLink}
+                      handleClick={() => setActiveLink(category.slug)}
                     />
                   )
                 )
