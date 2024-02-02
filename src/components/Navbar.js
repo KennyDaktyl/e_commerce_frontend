@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import { logout, checkAuthenticated } from '../actions/auth';
 
 
-// ... pozostała część importów
-
 const Navbar = ({ logout, isAuthenticated }) => {
     const [authReady, setAuthReady] = useState(false);
     const [menuItems, setMenuItems] = useState([]);

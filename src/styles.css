@@ -9,3 +9,48 @@
 .header-top-bar a:hover{
     color: rgba(0,0,0,.85);
 } 
+
+.side-bar-nav a {
+    color: rgba(0,0,0,.55);
+    text-decoration: none;
+}
+
+a.active-link {
+   font-weight: 700;
+   font-size: 1.1rem;
+}
+
+.side-bar-nav ul.list-unstyled {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.side-bar-nav ul.list-unstyled > li {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+/* Zagnieżdżenie 1 */
+.side-bar-nav ul.list-unstyled > li > ul {
+  margin-left: 10px;
+}
+
+/* Zagnieżdżenie 2 */
+.side-bar-nav ul.list-unstyled > li > ul > li > ul {
+  margin-left: 20px;
+}
+
+/* Zagnieżdżenie 3 */
+.side-bar-nav ul.list-unstyled > li > ul > li > ul > li > ul {
+  margin-left: 30px;
+}
+
+/* Zagnieżdżenie 4 */
+.side-bar-nav ul.list-unstyled > li > ul > li > ul > li > ul > li > ul {
+  margin-left: 40px;
+}
+
+/* Zagnieżdżenie 5 */
+.side-bar-nav ul.list-unstyled > li > ul > li > ul > li > ul > li > ul > li > ul {
+  margin-left: 50px;
+}
