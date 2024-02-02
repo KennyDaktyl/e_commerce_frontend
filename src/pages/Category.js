@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-const MenuItems = ({ category, parentPath, fetchProducts }) => {
+const MenuItems = ({ category, parentPath, fetchProducts, categoryData }) => {
   const hasSubcategories = category.subcategories && category.subcategories.length > 0;
 
   if (hasSubcategories) {
@@ -10,6 +10,7 @@ const MenuItems = ({ category, parentPath, fetchProducts }) => {
         category={category}
         parentPath={parentPath}
         fetchProducts={fetchProducts}
+        categoryData={categoryData}
       />
     );
   } else {
@@ -18,12 +19,13 @@ const MenuItems = ({ category, parentPath, fetchProducts }) => {
         category={category}
         parentPath={parentPath}
         fetchProducts={fetchProducts}
+        categoryData={categoryData}
       />
     );
   }
 };
 
-const CategoryWithSubcategories = ({ category, parentPath, fetchProducts }) => {
+const CategoryWithSubcategories = ({ category, parentPath, fetchProducts, categoryData }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleToggle = () => {
@@ -33,7 +35,7 @@ const CategoryWithSubcategories = ({ category, parentPath, fetchProducts }) => {
   return (
     <li className={`active col-12 m-0 p-0 mt-3 pl-2 has-subcategories`} key={category.id}>
       <Link
-        to={`${parentPath}/${category.slug}/`}
+        to={`/${categoryData.slug}${parentPath}/${category.slug}/`}
         data-toggle='collapse'
         aria-expanded={isExpanded}
         className={`col-12 text-left ml-0 collapsed ${category.subcategories ? 'dropdown-toggle' : ''}`}
@@ -49,6 +51,7 @@ const CategoryWithSubcategories = ({ category, parentPath, fetchProducts }) => {
               category={subcategory}
               parentPath={`${parentPath}/${category.slug}`}
               fetchProducts={fetchProducts}
+              categoryData={categoryData}
             />
           ))}
         </ul>
@@ -57,7 +60,7 @@ const CategoryWithSubcategories = ({ category, parentPath, fetchProducts }) => {
   );
 };
 
-const CategoryWithProducts = ({ category, parentPath, fetchProducts }) => {
+const CategoryWithProducts = ({ category, parentPath, fetchProducts, categoryData }) => {
   const handleProductClick = async () => {
     fetchProducts(category.slug);
   };
@@ -65,7 +68,7 @@ const CategoryWithProducts = ({ category, parentPath, fetchProducts }) => {
   return (
     <li className={`active col-12 m-0 p-0 mt-3 pl-2`} key={category.id}>
       <Link
-        to={`${parentPath}/${category.slug}/`}
+        to={`/${categoryData.slug}${parentPath}/${category.slug}/`}
         className={`col-12 text-left ml-0`}
         onClick={handleProductClick}
       >
@@ -75,12 +78,10 @@ const CategoryWithProducts = ({ category, parentPath, fetchProducts }) => {
   );
 };
 
-
 const Categories = () => {
   const [categoryData, setCategoryData] = useState(null);
   const [products, setProducts] = useState([]);
   const { slug } = useParams();
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,9 +101,10 @@ const Categories = () => {
     return <div className="container">Loading...</div>;
   }
 
-  const parentPath = categoryData.parent?.slug || '';
+  const parentPath = categoryData.parent ? `/${categoryData.parent.slug}` : '';
 
-   const fetchProducts = async (categorySlug) => {
+
+  const fetchProducts = async (categorySlug) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/categories/${categorySlug}/products/`);
       const data = await response.json();
@@ -113,7 +115,7 @@ const Categories = () => {
   };
 
   if (!products) {
-     return <div>Loading...</div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -124,13 +126,27 @@ const Categories = () => {
           <p>{categoryData.description}</p>
           <div className='side-bar-nav col-3'>
             <ul className='list-unstyled'>
-              {categoryData.subcategories && categoryData.subcategories.map((category) =>
-                category.parent && category.subcategories && category.subcategories.length > 0 ? (
-                  <CategoryWithSubcategories key={category.id} category={category} parentPath={parentPath} fetchProducts={fetchProducts} />
-                ) : (
-                  category.parent && <CategoryWithProducts key={category.id} category={category} parentPath={parentPath} fetchProducts={fetchProducts} />
+              {categoryData.subcategories && categoryData.subcategories.map((category) => (
+                category.parent && (
+                  (category.subcategories && category.subcategories.length > 0) ? (
+                    <CategoryWithSubcategories
+                      key={category.id}
+                      category={category}
+                      parentPath={parentPath}
+                      fetchProducts={fetchProducts}
+                      categoryData={categoryData}
+                    />
+                  ) : (
+                    <CategoryWithProducts
+                      key={category.id}
+                      category={category}
+                      parentPath={parentPath}
+                      fetchProducts={fetchProducts}
+                      categoryData={categoryData}
+                    />
+                  )
                 )
-              )}
+              ))}
             </ul>
           </div>
           <div className="container__products col-9 d-flex justify-content-center">
@@ -145,6 +161,6 @@ const Categories = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Categories;
